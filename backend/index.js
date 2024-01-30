@@ -1,22 +1,22 @@
 const express = require('express');
-const routes = express.Router();
+var path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
-// const paletteRoutes = require('./routes/palette.route');
 require('dotenv').config();
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(routes);
-// routes.use('/', paletteRoutes);
-// routes.use('/', authRoutes);
-// routes.use('/', newsRoutes);
+
+
 const PORT = 3000;
 
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 app.get('/', (req, res) => {
-    res.send('Server is running...');
+    res.render('index.ejs');
 });
 
 app.listen(process.env.PORT || PORT, (err) => {
