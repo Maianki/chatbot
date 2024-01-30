@@ -20,6 +20,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 io.on('connection', (socket) => {
+    // eslint-disable-next-line no-console
     console.log('a user connected', socket.id);
 });
 
