@@ -21,6 +21,11 @@
                 top: auto;
             }
         }
+
+        .btn__submit{
+            cursor: pointer;
+        }
+
         .chatbot.chatbot--closed {
             top: auto;
             width: 100%;
@@ -325,9 +330,12 @@
         </div>
         <div class="chatbot__entry chatbot--closed">
           <input type="text" class="chatbot__input" placeholder="Write a message..." />
-          <svg class="chatbot__submit" viewBox="0 0 32 32">
-            <use xlink:href="#icon-send" />
-          </svg>
+          <button id="btn-submit" class='btn__submit'>
+            <svg class="chatbot__submit" viewBox="0 0 32 32">
+                <use xlink:href="#icon-send" />
+            </svg>
+          </button>
+         
         </div>
       </div>
       
@@ -372,10 +380,25 @@
     const $chatbotHeader = $document.querySelector('.chatbot__header')
     const $chatbotMessages = $document.querySelector('.chatbot__messages')
     const $chatbotInput = $document.querySelector('.chatbot__input')
-    const $chatbotSubmit = $document.querySelector('.chatbot__submit')
+    const $chatbotSubmit = $document.querySelector('#btn-submit')
+    
 
     const botLoadingDelay = 1000
     const botReplyDelay = 2000
+    $chatbotSubmit.addEventListener('click', ()=>{
+        let message = $chatbotInput.value;
+        if (message) {
+            socket.emit('user message', message);
+            $chatbotInput.value = '';
+        }
+    })
+
+    socket.on('user message', (msg) => {
+        const item = document.createElement('li');
+        item.textContent = msg;
+        $chatbotMessages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
 
     document.addEventListener('keypress', event => {
     if (event.which == 13) validateMessage()
