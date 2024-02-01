@@ -285,9 +285,9 @@
             box-sizing: border-box;
         }
         body {
-            background: url("https://images.unsplash.com/photo-1464823063530-08f10ed1a2dd?dpr=1&auto=compress,format&fit=crop&w=1199&h=799&q=80&cs=tinysrgb&crop=&bg=") no-repeat center center;
+            background: url("https://oaidalleapiprodscus.blob.core.windows.net/private/org-HT3kVbHryA3GxAK2emv2G3i3/user-tvksOHocn1Kj4UfEslVFpHZt/img-ccMujyP9uEnQaZXJFl9uBZvZ.png?st=2024-02-01T16%3A27%3A44Z&se=2024-02-01T18%3A27%3A44Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-01-31T21%3A40%3A33Z&ske=2024-02-01T21%3A40%3A33Z&sks=b&skv=2021-08-06&sig=GmITWr0h1tzBVlxlbZ%2Bt1vfXAcnaRPxxaGfSbUYfQRQ%3D") no-repeat center center;
             background-size: cover;
-            height: 1000px;
+            height: 800px;
             font-family: 'Open Sans', sans-serif;
             font-size: 16px;
         }
@@ -387,21 +387,47 @@
     const botReplyDelay = 2000
     $chatbotSubmit.addEventListener('click', ()=>{
         let message = $chatbotInput.value;
+        userMessage(message);
         if (message) {
             socket.emit('user message', message);
             $chatbotInput.value = '';
         }
+
+        scrollDown();
     })
 
+    const scrollDown = () => {
+        const distanceToScroll =
+            $chatbotMessageWindow.scrollHeight -
+            ($chatbotMessages.lastChild.offsetHeight + 60);
+
+        $chatbotMessageWindow.scrollTop = distanceToScroll;
+        return false
+    }
+
     socket.on('user message', (msg) => {
-        const item = document.createElement('li');
-        item.textContent = msg;
-        $chatbotMessages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
+        // const item = document.createElement('li');
+        // item.textContent = msg;
+        // $chatbotMessages.appendChild(item);
+
+        $chatbotMessages.innerHTML += `<li 
+        class='is-ai animation' 
+        id='${false ? "is-loading" : ""}'>
+            <div class="is-ai__profile-picture">
+            <svg class="icon-avatar" viewBox="0 0 32 32">
+                <use xlink:href="#avatar" />
+            </svg>
+            </div>
+            <span class='chatbot__arrow chatbot__arrow--left'></span>
+            <div class='chatbot__message'>${msg}</div>
+        </li>`
+        scrollDown();
     });
 
     document.addEventListener('keypress', event => {
-    if (event.which == 13) validateMessage()
+        if (event.which == 13) 
+        return false;
+        //validateMessage()
     }, false)
 
     $chatbotHeader.addEventListener('click', () => {
@@ -414,6 +440,15 @@
         index = classes.indexOf(klass)
     index >= 0 ? classes.splice(index, 1) : classes.push(klass)
     element.className = classes.join(' ')
+    }
+
+    const userMessage = content => {
+    $chatbotMessages.innerHTML += `<li class='is-user animation'>
+        <p class='chatbot__message'>
+            ${content}
+        </p>
+        <span class='chatbot__arrow chatbot__arrow--right'></span>
+        </li>`
     }
 
     </script>
