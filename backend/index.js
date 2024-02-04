@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 var path = require('path');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 const bodyParser = require('body-parser');
 const app = express();
 const http = require("http");
@@ -21,14 +22,24 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 io.on('connection', (socket) => {
+    const roomId = uuidv4();
+    
     // eslint-disable-next-line no-console
-    console.log('User :: ', socket.id);
+    console.log('socket-id || room-id :: ', socket.id,"||", roomId);
+    
+    socket.emit('joinRoom', roomId); 
+
     socket.on('user message', async (msg) => {
-        // eslint-disable-next-line no-console
-        console.log('message: ' + msg);
+        socket.join(roomId); 
         let chatbotReply = await getDatatFromOpenAI(msg);
-        io.emit('user message', chatbotReply);
-    })
+        io.to(roomId).emit('user message', chatbotReply);
+    });
+
+    socket.on('disconnect', () => {
+        console.log("Closed roomId", roomId);
+        socket.leave(roomId);
+    });
+    
 });
 
 app.get('/', (req, res) => {
