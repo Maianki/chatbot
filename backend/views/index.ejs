@@ -425,9 +425,17 @@
     });
 
     document.addEventListener('keypress', event => {
-        if (event.which == 13) 
-        return false;
-        //validateMessage()
+        let message = $chatbotInput.value;
+        if (event.which == 13 && message != undefined && message.length > 0) {
+            userMessage(message);
+            if (message) {
+                socket.emit('user message', message);
+                $chatbotInput.value = '';
+            }
+
+            scrollDown();
+        }
+        
     }, false)
 
     $chatbotHeader.addEventListener('click', () => {
